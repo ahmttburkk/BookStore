@@ -1,0 +1,13 @@
+﻿@using CETBookStore.Data;
+@*@{
+    ViewData["Title"] = "Home Page";
+}*@
+
+<div class="text-center">
+    <h1 class="display-4">En Ucuz Kitaplar</h1>
+        @foreach(var books in Model)
+            {
+                <h3>@books.Name - @books.Price</h3>
+            }*
+
+</div>
