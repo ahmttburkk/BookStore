@@ -1,4 +1,5 @@
 ﻿@using CETBookStore.Data;
+@model List<Book>
 @*@{
     ViewData["Title"] = "Home Page";
 }*@
@@ -8,6 +9,6 @@
         @foreach(var books in Model)
             {
                 <h3>@books.Name - @books.Price</h3>
-            }*
+            }
 
 </div>

@@ -21,9 +21,14 @@ namespace CETBookStore.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-              return _context.Books != null ? 
-                          View(await _context.Books.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Books'  is null.");
+            //return _context.Books != null ? 
+            //            View(await _context.Books.ToListAsync()) :
+            //            Problem("Entity set 'ApplicationDbContext.Books'  is null.");
+            var applicationDbContext = _context.Books
+                .Include(b => b.Category)
+                .Include(b => b.Publisher);
+            var booklist = await applicationDbContext.ToListAsync();
+            return View(booklist);
         }
 
         // GET: Books/Details/5
@@ -35,6 +40,8 @@ namespace CETBookStore.Controllers
             }
 
             var book = await _context.Books
+                .Include(b => b.Category)
+                .Include(b => b.Publisher)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -47,6 +54,8 @@ namespace CETBookStore.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
             return View();
         }
 
@@ -55,7 +64,7 @@ namespace CETBookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price,PageNumber,PublishDate")] Book book)
+        public async Task<IActionResult> Create([Bind("Id,Name,Price,PageNumber,PublishDate,PublisherId,CategoryId")] Book book)
         {
             if (ModelState.IsValid)
             {
@@ -63,6 +72,8 @@ namespace CETBookStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
             return View(book);
         }
 
@@ -79,6 +90,8 @@ namespace CETBookStore.Controllers
             {
                 return NotFound();
             }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
             return View(book);
         }
 
@@ -87,7 +100,7 @@ namespace CETBookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,PageNumber,PublishDate")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,PageNumber,PublishDate,PublisherId,CategoryId")] Book book)
         {
             if (id != book.Id)
             {
@@ -114,6 +127,8 @@ namespace CETBookStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
             return View(book);
         }
 
@@ -152,6 +167,17 @@ namespace CETBookStore.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+        
+        public async Task<IActionResult> BuyNow([Bind("UserName,UserAdress, CreditCard")] UserInformation user)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(user);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(user);
         }
 
         private bool BookExists(int id)

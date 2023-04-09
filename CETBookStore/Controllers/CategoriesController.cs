@@ -34,16 +34,16 @@ namespace CETBookStore.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var category = await _context.Categories.Include(c => c.Books).ThenInclude(c => c.Publisher)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            var degerler = _context.Books.Where(x => x.Category.Id == id).ToList();
+            //var degerler = _context.Books.Where(x => x.Category.Id == id).ToList();
 
-            return View(degerler);
+            return View(category);
         }
 
         // GET: Categories/Create

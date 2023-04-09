@@ -2,11 +2,11 @@
 
 namespace CETBookStore.Data
 {
-    public class Category
-    {
-        public int Id { get; set; }
-        [MaxLength(30)]
-        public string Name { get; set; }
-        public virtual List<Book>? Books { get; set; }
-    }
+    //public class Category
+    //{
+    //    public int Id { get; set; }
+    //    [MaxLength(30)]
+    //    public string Name { get; set; }
+    //    public virtual List<Book>? Books { get; set; } = new List<Book>();
+    //}
 }
